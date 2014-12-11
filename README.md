@@ -45,7 +45,7 @@ This is the basic structure of a topic file:
 ```json
 {
 	"Question": ["answer"],
-	"Question 2": ["answer 2"]
+	"Question 2": ["answer 2", "rewsna"]
 }
 ```
 
