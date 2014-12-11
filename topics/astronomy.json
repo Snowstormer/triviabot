@@ -1,0 +1,12 @@
+{
+	"Which planet is closest to the sun?": ["mercury"],
+	"What is the 3rd planet from the sun?": ["earth"],
+	"What is the 8th planet from the sun?": ["neptune"],
+	"What is the 5th planet from the sun?": ["jupiter"],
+	"What is the 2nd planet from the sun?": ["venus"],
+	"What is the 4th planet from the sun?": ["mars"],
+	"What is the 6th planet from the sun?": ["saturn"],
+	"what is the 7th planet from the sun?": ["uranus"],
+	"How many planets are in the solar system?": ["8", "eight"],
+	"What is the main metallic element in the core of the moon?": ["iron", "fe"]
+}
