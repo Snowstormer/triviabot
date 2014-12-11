@@ -5,7 +5,7 @@ A trivia IRC bot, written in Python. Requires Python 2.7.
 
 Setting up
 =========
-On *nix based operating systems (assuming you have Python 2.7):
+On *nix based operating systems (assuming you have Python 2.7 (and git, if not, shame on you)):
 ```
 $ git clone https://github.com/Snowstormer/triviabot.git
 $ cd triviabot/
