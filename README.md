@@ -33,3 +33,5 @@ Of course, you'd have to edit the config first to make it actually work, the exa
 Everything is pretty self-explanatory - if your bot has no NickServ password, leave `password` blank. Leaving `account` blank will default it to the bot's nickname.
 
 If you wish to disable any of the topics, just remove them from the `enabledtopics` list and you're good to go.
+
+There is also two other lines in the example config not present in this readme, those are "comments" and don't do anything - feel free to remove them if you so choose.
