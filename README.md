@@ -54,3 +54,5 @@ As for question, you can put anything - however answers have some guidelines. To
 Answers in the topic files that come with the bot are (mostly) all lowercase - this used to be a requirement, but is not anymore.
 
 Finally, you have to add your topic into the `config.json`. Just plop it into the `enabledtopics` array at any place - the array is sorted when displayed anyway.
+
+If you think your topic is good enough to be in the core, you can submit a pull request.
