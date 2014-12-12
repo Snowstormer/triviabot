@@ -88,7 +88,7 @@ while 1:
         message = text.split(":", 2)[2].strip()
         if message.lower().startswith(prefix+"start"):
             try:
-                triviatopic = message.split(" ", 1)[1].strip()
+                triviatopic = message.split(" ")[1].strip()
                 if triviatopic in topics:
                     topicmsg = "Topic chosen: %s." % triviatopic
                 else:
@@ -108,7 +108,7 @@ while 1:
         elif message.lower().startswith(prefix+"topic") and message.lower() != prefix+"topics":
             if started == True:
                 try:
-                    testtopic = message.split(" ", 1)[1].strip()
+                    testtopic = message.split(" ")[1].strip()
                     if testtopic in topics:
                         if testtopic != triviatopic:
                             triviatopic = testtopic
@@ -223,6 +223,8 @@ while 1:
                     privmsg(sendto, "%s: The channel you entered was invalid." % (sender))
             else:
                 privmsg(sendto, "%s: Cannot switch channels while trivia is in session, please type %sstop to stop." % (sender, prefix))
+        elif message.lower() == prefix+"commands":
+
 
     while answer == "" and started == True and triviatopic != None:
         if triviatopic != "all":
