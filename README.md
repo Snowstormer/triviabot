@@ -49,6 +49,8 @@ This is the basic structure of a topic file:
 }
 ```
 
-As for question, you can put anything - however answers have some guidelines. To make answers not throw an error, you **have to** place them inside a array, yes, even if there's only one answer it has to be in a array. Secondly, answers **have to** be lowercase. When checking for an answer, the bot converts the text into all lowercase - this means that it will not find the answer if it too isn't lowercase. This requirement may or may not change in the future.
+As for question, you can put anything - however answers have some guidelines. To make answers not throw an error, you **have to** place them inside a array, yes, even if there's only one answer it has to be in a array.
+
+Answers in the topic files that come with the bot are (mostly) all lowercase - this used to be a requirement, but is not anymore.
 
 Finally, you have to add your topic into the `config.json`. Just plop it into the `enabledtopics` array at any place - the array is sorted when displayed anyway.
