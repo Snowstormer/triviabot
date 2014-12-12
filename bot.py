@@ -122,7 +122,7 @@ while 1:
                 privmsg(sendto, "%s: Trivia is not in session, type %sstart to start." % (sender, prefix))
         elif message.lower() == prefix+"topics":
             privmsg(sendto, "All available topics: "+", ".join(topics))
-        elif message.lower() in answer:
+        elif message.lower() in [i.lower() for i in answer]:
             if answer != "":
                 end = time.time()
                 timeelapsed = round(end - start, 2)
