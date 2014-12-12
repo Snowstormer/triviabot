@@ -26,7 +26,7 @@ Of course, you'd have to edit the config first to make it actually work, the exa
 	"admins": ["admin"],
 	"prefix": "!",
 	
-	"enabledtopics": ["all", "animals", "astronomy", "countries", "culture", "general", "geography", "history", "internet", "languages", "mathematics", "music", "politics", "science"]
+	"enabledtopics": ["all", "animals", "astronomy", "countries", "culture", "general", "geography", "history", "internet", "languages", "mathematics", "music", "politics", "science", "literature"]
 }
 ```
 
