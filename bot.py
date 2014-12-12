@@ -57,7 +57,6 @@ triviatopic = None
 number = 1
 start = None
 end = None
-old_question = None
 
 #connect
 irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -219,10 +218,6 @@ while 1:
         questions = json.load(topicjson)
         topicjson.close()
         question = random.choice(questions.keys())
-        if old_question != question:
-            old_question = question
-        else:
-            question = random.choice(questions.keys())
         answer = questions[question]
         privmsg(sendto, "Question %s: %s" % (number, question))
         start = time.time()
