@@ -1,4 +1,9 @@
 {
+	"What is the currency of Estonia?": ["euro"],
+	"What is the currency of Transnistria?": ["ruble"],
+	"What is the currency of Argentina?": ["peso"],
+	"What is Japan's currency?": ["yen"],
+	"What is Canada's national animal?": ["beaver"],
 	"What country has the most time zones, with 12?": ["france"],
 	"What is the tallest mountain in Africa?": ["mount kilimanjaro", "kilimanjaro", "mt kilimanjaro", "mt. kilimanjaro"], 
 	"What continent has the fewest flowering plants?": ["antarctica", "antarctic"],
@@ -47,5 +52,17 @@
 	"Which hills divide England from Scotland?": ["cheviots", "the cheviots"],
 	"What is the third major Balearic Island, together with Majorca and Minorca?": ["ibiza"],
 	"Cape Verde was until independence a territory of which European country?": ["portugal"],
-	"Windhoek is the capital of which country?": ["namibia"]
+	"Windhoek is the capital of which country?": ["namibia"],
+	"Which country gave the USA the Statute of Liberty?": ["france"],
+	"How many UN members do not recognize Armenia?": ["1", "one"],
+	"Which UN member does not recognize Armenia?": ["pakistan"],
+	"How many UN members recognize the Republic of China?": ["21", "twenty one", "twenty-one"],
+	"How many UN members do not recognize Cyprus?": ["1", "one"],
+	"Which UN member does not recognize Cyprus?": ["turkey"],
+	"How many UN members do not recognize Israel?": ["32", "thirty two", "thirty-two"],
+	"How many UN members recognize Palestine?": ["135"],
+	"How many UN members recognize Kosovo?": ["108"],
+	"How many states recognize Somaliland?": ["0", "zero", "none"],
+	"A view of a forest in winter - with the blue sky, dark line of trees, and snow on the ground - has what metaphorical significance for Estonia?": ["flag", "its flag"],
+	"India's national anthem is written in what language that is also the national language of one of its neighbors?": ["bengali"]
 }
