@@ -211,18 +211,36 @@ while 1:
             else:
                 privmsg(sendto, "%s: Trivia is not in session, type %sstart to start." % (sender, prefix))
         elif message.lower().startswith(prefix+"switch"):
-            if started != True:
-                try:
-                    test_channel = message.split(" ", 1)[1].strip()
-                    if re.match(r'#{1,}[A-Za-z0-9!"#%&\/()=`\'*.\-_~\+:;@{}\[\]\\]{0,}', test_channel):
-                        irc.send("PART %s :Switching channel...\r\n" % channel)
-                        irc.send("JOIN %s\r\n" % test_channel)
-                    else:
+            if sender in admins:
+                if started != True:
+                    try:
+                        test_channel = message.split(" ", 1)[1].strip()
+                        if re.match(r'#{1,}[A-Za-z0-9!"#%&\/()=`\'*.\-_~\+:;@{}\[\]\\]{0,}', test_channel):
+                            irc.send("PART %s :Switching channel...\r\n" % channel)
+                            irc.send("JOIN %s\r\n" % test_channel)
+                        else:
+                            privmsg(sendto, "%s: The channel you entered was invalid." % (sender))
+                    except Exception:
                         privmsg(sendto, "%s: The channel you entered was invalid." % (sender))
-                except Exception:
-                    privmsg(sendto, "%s: The channel you entered was invalid." % (sender))
+                else:
+                    privmsg(sendto, "%s: Cannot switch channels while trivia is in session, please type %sstop to stop." % (sender, prefix))
             else:
-                privmsg(sendto, "%s: Cannot switch channels while trivia is in session, please type %sstop to stop." % (sender, prefix))
+                privmsg(sendto, "%s: You do not have the permission to do this." % sender)
+        elif message.lower() == prefix+"commands" or message.lower() == prefix+"commandlist":
+            defaultcommands = [prefix+"start", prefix+"topics", prefix+"commands"]
+            gamecommands = defaultcommands + [prefix+"stop", prefix+"skip", prefix+"topic", prefix+"points"]
+            admincommands = defaultcommands + [prefix+"quit", prefix+"switch"]
+            admingamecommands = admincommands + gamecommands
+            if sender in admins:
+                if started == True:
+                    privmsg(sendto, "%s: Commands available to you are: %s" % (sender, ", ".join(admingamecommands)))
+                else:
+                    privmsg(sendto, "%s: Commands available to you are: %s" % (sender, ", ".join(admincommands)))
+            else:
+                if started == True:
+                    privmsg(sendto, "%s: Commands available to you are: %s" % (sender, ", ".join(gamecommands)))
+                else:
+                    privmsg(sendto, "%s: Commands available to you are: %s" % (sender, ", ".join(defaultcommands)))
 
     while answer == "" and started == True and triviatopic != None:
         if triviatopic != "all":
