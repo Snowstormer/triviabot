@@ -18,7 +18,7 @@ channel = None
 admins = None
 prefix = None
 topics = None
-realname = "Triviabot"
+realname = "https://github.com/Snowstormer/triviabot"
 
 if os.path.isfile("config.json"):
     settingsfile = open("config.json")
