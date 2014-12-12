@@ -110,10 +110,13 @@ while 1:
                 try:
                     testtopic = message.split(" ", 1)[1].strip()
                     if testtopic in topics:
-                        triviatopic = testtopic
-                        privmsg(sendto, "New topic: %s." % triviatopic)
-                        number -= 1
-                        answer = ""
+                        if testtopic != triviatopic:
+                            triviatopic = testtopic
+                            privmsg(sendto, "New topic: %s." % triviatopic)
+                            number -= 1
+                            answer = ""
+                        else:
+                            privmsg(sendto, "%s: %s is already the topic, try another one. Type %stopics to see all available topics!" % (sender, triviatopic, prefix))
                     else:
                         privmsg(sendto, "%s: That doesn't look like a valid topic to me, type %stopics to see all available topics!" % (sender, prefix))
                 except Exception:
@@ -207,6 +210,19 @@ while 1:
                     privmsg(sendto, sender+": "+", ".join(pointlist))
             else:
                 privmsg(sendto, "%s: Trivia is not in session, type %sstart to start." % (sender, prefix))
+        elif message.lower().startswith(prefix+"switch"):
+            if started != True:
+                try:
+                    test_channel = message.split(" ", 1)[1].strip()
+                    if re.match(r'#{1,}[A-Za-z0-9!"#%&\/()=`\'*.\-_~\+:;@{}\[\]\\]{0,}', test_channel):
+                        irc.send("PART %s :Switching channel...\r\n" % channel)
+                        irc.send("JOIN %s\r\n" % test_channel)
+                    else:
+                        privmsg(sendto, "%s: The channel you entered was invalid." % (sender))
+                except Exception:
+                    privmsg(sendto, "%s: The channel you entered was invalid." % (sender))
+            else:
+                privmsg(sendto, "%s: Cannot switch channels while trivia is in session, please type %sstop to stop." % (sender, prefix))
 
     while answer == "" and started == True and triviatopic != None:
         if triviatopic != "all":
