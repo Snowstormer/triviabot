@@ -223,8 +223,6 @@ while 1:
                     privmsg(sendto, "%s: The channel you entered was invalid." % (sender))
             else:
                 privmsg(sendto, "%s: Cannot switch channels while trivia is in session, please type %sstop to stop." % (sender, prefix))
-        elif message.lower() == prefix+"commands":
-
 
     while answer == "" and started == True and triviatopic != None:
         if triviatopic != "all":
