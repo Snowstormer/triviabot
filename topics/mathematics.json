@@ -2,5 +2,6 @@
 	"What does the roman numeral C represent?": ["100", "hundred", "one hundred"],
 	"What's the common name for a cubic decimeter?": ["litre", "liter"],
 	"What number does \"giga\" stand for?": ["a billion", "one billion", "billion", "1000000000", "1,000,000,000"],
-	"What is the cube root of 343?": ["7", "seven"]
+	"What is the cube root of 343?": ["7", "seven"],
+	"What is the result when adding every number from 1 to 100 consecutively?": ["5050"]
 }
