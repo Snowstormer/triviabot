@@ -34,7 +34,7 @@
 	"What is the capital of Mongolia?": ["ulan bator", "ulaanbaatar"],
 	"What is the capital of Algeria?": ["algiers"],
 	"What is the capital of Somalia?": ["mogadishu"],
-	"What is the capital of Cyprus?": ["nicosia", "lefkosia"],
+	"What is the capital of Cyprus?": ["nicosia"],
 	"What is the capital of Afghanistan?": ["kabul"],
 	"What is the capital of Iran?": ["tehran"],
 	"What is the largest city of Morocco?": ["casablanca"],
@@ -46,5 +46,6 @@
 	"Carthage is a 3,000 year old urban settlement now part of which North African capital city?": ["tunis", "tunis, tunisia"],
 	"Which hills divide England from Scotland?": ["cheviots", "the cheviots"],
 	"What is the third major Balearic Island, together with Majorca and Minorca?": ["ibiza"],
-	"Cape Verde was until independence a territory of which European country?": ["portugal"]
+	"Cape Verde was until independence a territory of which European country?": ["portugal"],
+	"Windhoek is the capital of which country?": ["namibia"]
 }
