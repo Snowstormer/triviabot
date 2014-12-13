@@ -9,14 +9,13 @@ On *nix based operating systems (assuming you have Python 2.7 (and git, if not, 
 ```
 $ git clone https://github.com/Snowstormer/triviabot.git
 $ cd triviabot/
-$ cp config.json.example config.json
+$ cp config.example.json config.json
 $ python bot.py
 ```
 
 Of course, you'd have to edit the config first to make it actually work, the example config is similar to this:
 
 ```json
-{
 {
 	"--NEED HELP?--": "--If you are unsure how to edit this config file, please visit the GitHub page for help.--",
 	"server": "irc.myserver.com",
