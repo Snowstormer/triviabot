@@ -48,7 +48,7 @@ if os.path.isfile("config.json"):
         topics = settingsjson["enabledtopics"]
         topics.sort()
     except Exception:
-        print "Error: There is something wrong with your config, check it."
+        print "Error: There is something wrong with your config, please make sure all fields match the example config in the readme."
         sys.exit()
 else:
     print "Error: Config file does not exist, did you rename config.example.json to config.json?"

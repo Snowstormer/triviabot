@@ -17,6 +17,8 @@ Of course, you'd have to edit the config first to make it actually work, the exa
 
 ```json
 {
+{
+	"--NEED HELP?--": "--If you are unsure how to edit this config file, please visit the GitHub page for help.--",
 	"server": "irc.myserver.com",
 	"port": 6667,
 	"nickname": "Triviabot",
@@ -25,8 +27,10 @@ Of course, you'd have to edit the config first to make it actually work, the exa
 	"channel": "#Trivia",
 	"admins": ["admin"],
 	"prefix": "!",
-	
-	"enabledtopics": ["topic1", "topic2", "topic3"]
+
+	"--OPTIONAL CONFIGURATION--": "--You don't have to edit anything below here, but you can if you so wish.--",
+	"enabledtopics": ["topic", "topic", "topic"],
+	"savepoints": false
 }
 ```
 
@@ -34,7 +38,7 @@ Everything is pretty self-explanatory - if your bot has no NickServ password, le
 
 If you wish to disable any of the topics, just remove them from the `enabledtopics` array and you're good to go.
 
-There is also two other lines in the example config not present in this readme, those are "comments" and don't do anything - feel free to remove them if you so choose.
+Setting `savepoints` to true will make the bot keep all earned points even after the game is stopped or the bot disconnects through a points file (`points.json`), deleting this file will reset the points.
 
 Custom topics
 =============
