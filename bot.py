@@ -8,6 +8,9 @@ sys.setdefaultencoding("utf-8")
 def privmsg(to, msg):
     irc.send("PRIVMSG %s :%s\r\n" % (to, msg))
 
+def addhelp(prefix, s):
+    return prefix + s
+
 #settings
 server = None
 port = None
@@ -19,6 +22,7 @@ admins = None
 prefix = None
 topics = None
 realname = "https://github.com/Snowstormer/triviabot"
+savepoints = None
 
 if os.path.isfile("config.json"):
     settingsfile = open("config.json")
@@ -39,6 +43,7 @@ if os.path.isfile("config.json"):
         channel = settingsjson["channel"]
         admins = settingsjson["admins"]
         prefix = settingsjson["prefix"]
+        savepoints = settingsjson["savepoints"]
 
         topics = settingsjson["enabledtopics"]
         topics.sort()
@@ -46,11 +51,22 @@ if os.path.isfile("config.json"):
         print "Error: There is something wrong with your config, check it."
         sys.exit()
 else:
-    print "Error: Config file does not exist, did you rename config.json.example to config.json?"
+    print "Error: Config file does not exist, did you rename config.example.json to config.json?"
     sys.exit()
 
 ##Basic global variables
-points = {}
+if savepoints == True:
+    if os.path.isfile("points.json"):
+        pointsfile = open('points.json')
+        points = json.load(pointsfile)
+        pointsfile.close()
+    else:
+        pointsfile = open('points.json', 'w+')
+        pointsfile.write(json.dumps({}))
+        pointsfile.close()
+        points = {}
+else:
+    points = {}
 started = False
 question = None
 answer = ""
@@ -169,6 +185,10 @@ while 1:
                     points[sender] += pointamount
                 else:
                     points[sender] = pointamount
+                if savepoints == True:
+                    pointsfile = open('points.json', 'w')
+                    pointsfile.write(json.dumps(points))
+                    pointsfile.close()
                 time.sleep(1)
                 answer = ""
         elif message.lower() == prefix+"skip":
@@ -199,6 +219,10 @@ while 1:
                                     privmsg(sendto, "%s: Please note, you have no points left, you cannot skip more questions until you gain more." % sender)
                                 elif points[sender] < 5:
                                     privmsg(sendto, "%s: Please note, you have less than 5 points left, you cannot skip more questions until you gain more." % sender)
+                                if savepoints == True:
+                                    pointsfile = open('points.json', 'w')
+                                    pointsfile.write(json.dumps(points))
+                                    pointsfile.close()
                                 time.sleep(1)
                                 answer = ""
                             else:
@@ -212,7 +236,8 @@ while 1:
                 if sender in admins:
                     answer = ""
                     number = 1
-                    points = {}
+                    if savepoints != True:
+                        points = {}
                     triviatopic = None
                     started = False
                     privmsg(sendto, "Trivia session ended! Type %sstart to start again!" % prefix)
@@ -220,7 +245,8 @@ while 1:
                     if points[sender] > 10:
                         answer = ""
                         number = 1
-                        points = {}
+                        if savepoints != True:
+                            points = {}
                         triviatopic = None
                         started = False
                         privmsg(sendto, "Trivia session ended! Type %sstart to start again!" % prefix)
@@ -240,7 +266,7 @@ while 1:
             else:
                 privmsg(sendto, "%s: You do not have the permission to do this." % sender)
         elif message.lower() == prefix+"points":
-            if started == True:
+            if started == True or savepoints == True:
                 if not points:
                     privmsg(sendto, "%s: No one has scored a point yet, you can be the first by answering a question!" % sender)
                 else:
@@ -267,19 +293,23 @@ while 1:
             else:
                 privmsg(sendto, "%s: You do not have the permission to do this." % sender)
         elif message.lower() == prefix+"commands" or message.lower() == prefix+"commandlist" or message.lower() == prefix+"help":
-            defaultcommands = [prefix+"start", prefix+"topics", prefix+"commands", prefix+"commandlist", prefix+"help"]
-            gamecommands = [prefix+"stop", prefix+"skip", prefix+"topic", prefix+"points"]
-            admincommands = [prefix+"quit", prefix+"switch"]
+            command_list = []
+            if started != True:
+                command_list.append(addhelp(prefix, "start"))
+            if started == True:
+                command_list.append(addhelp(prefix, "stop"))
+                command_list.append(addhelp(prefix, "skip"))
+                command_list.append(addhelp(prefix, "topic"))
+            if started == True or savepoints == True:
+                command_list.append(addhelp(prefix, "points"))
+            command_list.append(addhelp(prefix, "commands"))
+            command_list.append(addhelp(prefix, "commandlist"))
+            command_list.append(addhelp(prefix, "help"))
             if sender in admins:
-                if started == True:
-                    privmsg(sendto, "%s: Commands available to you are: %s" % (sender, ", ".join(defaultcommands + gamecommands + admincommands)))
-                else:
-                    privmsg(sendto, "%s: Commands available to you are: %s" % (sender, ", ".join(defaultcommands + admincommands)))
-            else:
-                if started == True:
-                    privmsg(sendto, "%s: Commands available to you are: %s" % (sender, ", ".join(defaultcommands + gamecommands)))
-                else:
-                    privmsg(sendto, "%s: Commands available to you are: %s" % (sender, ", ".join(defaultcommands)))
+                if started != True:
+                    command_list.append(addhelp(prefix, "quit"))
+                    command_list.append(addhelp(prefix, "switch"))
+            privmsg(sendto, "%s: Commands available to you are %s" % (sender, ", ".join(command_list)))
 
     while answer == "" and started == True and triviatopic != None:
         if triviatopic != "all":
@@ -290,7 +320,6 @@ while 1:
             topicjson = open("topics/"+random.choice(alltopics)+".json")
         questions = json.load(topicjson)
         if question in questions:
-            print "IT HAPPENED!"
             questions.pop(question, None)
         topicjson.close()
         question = random.choice(questions.keys())
