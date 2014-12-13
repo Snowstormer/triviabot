@@ -52,11 +52,13 @@ else:
 ##Basic global variables
 points = {}
 started = False
+question = None
 answer = ""
 triviatopic = None
 number = 1
 start = None
 end = None
+randomtopic = False
 
 #connect
 irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -94,9 +96,11 @@ while 1:
                 else:
                     triviatopic = random.choice(topics)
                     topicmsg = "Topic chosen randomly: %s." % triviatopic
+                    randomtopic = True
             except Exception:
                 triviatopic = random.choice(topics)
                 topicmsg = "Topic chosen randomly: %s." % triviatopic
+                randomtopic = True
 
             if started == False:
                 privmsg(sendto, "Welcome to trivia!")
@@ -107,20 +111,43 @@ while 1:
                 privmsg(sendto, "%s: Trivia is already in session, type %sstop to stop." % (sender, prefix))
         elif message.lower().startswith(prefix+"topic") and message.lower() != prefix+"topics":
             if started == True:
-                try:
-                    testtopic = message.split(" ")[1].strip()
-                    if testtopic in topics:
-                        if testtopic != triviatopic:
-                            triviatopic = testtopic
-                            privmsg(sendto, "New topic: %s." % triviatopic)
-                            number -= 1
-                            answer = ""
+                if sender in admins or randomtopic == True:
+                    try:
+                        testtopic = message.split(" ")[1].strip()
+                        if testtopic in topics:
+                            if testtopic != triviatopic:
+                                triviatopic = testtopic
+                                privmsg(sendto, "New topic: %s." % triviatopic)
+                                randomtopic = False
+                                number -= 1
+                                answer = ""
+                            else:
+                                privmsg(sendto, "%s: %s is already the topic, try another one. Type %stopics to see all available topics!" % (sender, triviatopic, prefix))
                         else:
-                            privmsg(sendto, "%s: %s is already the topic, try another one. Type %stopics to see all available topics!" % (sender, triviatopic, prefix))
-                    else:
+                            privmsg(sendto, "%s: That doesn't look like a valid topic to me, type %stopics to see all available topics!" % (sender, prefix))
+                    except Exception:
                         privmsg(sendto, "%s: That doesn't look like a valid topic to me, type %stopics to see all available topics!" % (sender, prefix))
-                except Exception:
-                    privmsg(sendto, "%s: That doesn't look like a valid topic to me, type %stopics to see all available topics!" % (sender, prefix))
+                else:
+                    if sender in points and randomtopic != True:
+                        if points[sender] > 5:
+                            try:
+                                testtopic = message.split(" ")[1].strip()
+                                if testtopic in topics:
+                                    if testtopic != triviatopic:
+                                        triviatopic = testtopic
+                                        privmsg(sendto, "New topic: %s." % triviatopic)
+                                        number -= 1
+                                        answer = ""
+                                    else:
+                                        privmsg(sendto, "%s: %s is already the topic, try another one. Type %stopics to see all available topics!" % (sender, triviatopic, prefix))
+                                else:
+                                    privmsg(sendto, "%s: That doesn't look like a valid topic to me, type %stopics to see all available topics!" % (sender, prefix))
+                            except Exception:
+                                privmsg(sendto, "%s: That doesn't look like a valid topic to me, type %stopics to see all available topics!" % (sender, prefix))
+                        else:
+                            privmsg(sendto, "%s: You need at least 5 points to switch the topic, you have %s." % (sender, str(points[sender])))
+                    else:
+                        privmsg(sendto, "%s: You have not answered a single question yet, you need at least 5 points to change the topic." % sender)
             else:
                 privmsg(sendto, "%s: Trivia is not in session, type %sstart to start." % (sender, prefix))
         elif message.lower() == prefix+"topics":
@@ -182,12 +209,25 @@ while 1:
                     privmsg(sendto, "%s: Trivia is not in session, type %sstart to start." % (sender, prefix))
         elif message.lower() == prefix+"stop":
             if started == True:
-                answer = ""
-                number = 1
-                points = {}
-                triviatopic = None
-                started = False
-                privmsg(sendto, "Trivia session ended! Type %sstart to start again!" % prefix)
+                if sender in admins:
+                    answer = ""
+                    number = 1
+                    points = {}
+                    triviatopic = None
+                    started = False
+                    privmsg(sendto, "Trivia session ended! Type %sstart to start again!" % prefix)
+                elif sender in points:
+                    if points[sender] > 10:
+                        answer = ""
+                        number = 1
+                        points = {}
+                        triviatopic = None
+                        started = False
+                        privmsg(sendto, "Trivia session ended! Type %sstart to start again!" % prefix)
+                    else:
+                        privmsg(sendto, "%s: You need at least 10 points to stop the session, you have %s." % (sender, str(points[sender])))
+                else:
+                    privmsg(sendto, "%s: You have not answered a single question yet, you need at least 10 points to stop the session." % (sender))
             else:
                 privmsg(sendto, "%s: Trivia is not in session, type %sstart to start." % (sender, prefix))
         elif message.lower() == prefix+"quit":
@@ -226,19 +266,18 @@ while 1:
                     privmsg(sendto, "%s: Cannot switch channels while trivia is in session, please type %sstop to stop." % (sender, prefix))
             else:
                 privmsg(sendto, "%s: You do not have the permission to do this." % sender)
-        elif message.lower() == prefix+"commands" or message.lower() == prefix+"commandlist":
-            defaultcommands = [prefix+"start", prefix+"topics", prefix+"commands"]
-            gamecommands = defaultcommands + [prefix+"stop", prefix+"skip", prefix+"topic", prefix+"points"]
-            admincommands = defaultcommands + [prefix+"quit", prefix+"switch"]
-            admingamecommands = admincommands + gamecommands
+        elif message.lower() == prefix+"commands" or message.lower() == prefix+"commandlist" or message.lower() == prefix+"help":
+            defaultcommands = [prefix+"start", prefix+"topics", prefix+"commands", prefix+"commandlist", prefix+"help"]
+            gamecommands = [prefix+"stop", prefix+"skip", prefix+"topic", prefix+"points"]
+            admincommands = [prefix+"quit", prefix+"switch"]
             if sender in admins:
                 if started == True:
-                    privmsg(sendto, "%s: Commands available to you are: %s" % (sender, ", ".join(admingamecommands)))
+                    privmsg(sendto, "%s: Commands available to you are: %s" % (sender, ", ".join(defaultcommands + gamecommands + admincommands)))
                 else:
-                    privmsg(sendto, "%s: Commands available to you are: %s" % (sender, ", ".join(admincommands)))
+                    privmsg(sendto, "%s: Commands available to you are: %s" % (sender, ", ".join(defaultcommands + admincommands)))
             else:
                 if started == True:
-                    privmsg(sendto, "%s: Commands available to you are: %s" % (sender, ", ".join(gamecommands)))
+                    privmsg(sendto, "%s: Commands available to you are: %s" % (sender, ", ".join(defaultcommands + gamecommands)))
                 else:
                     privmsg(sendto, "%s: Commands available to you are: %s" % (sender, ", ".join(defaultcommands)))
 
@@ -250,6 +289,9 @@ while 1:
             alltopics.remove("all")
             topicjson = open("topics/"+random.choice(alltopics)+".json")
         questions = json.load(topicjson)
+        if question in questions:
+            print "IT HAPPENED!"
+            questions.pop(question, None)
         topicjson.close()
         question = random.choice(questions.keys())
         answer = questions[question]
