@@ -1,5 +1,5 @@
 triviabot
-=========
+==========
 
 A trivia IRC bot, written in Python. Requires Python 2.7.
 
