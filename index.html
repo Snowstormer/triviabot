@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Triviabot by Snowstormer</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Triviabot</h1>
+        <p class="header">A trivia IRC bot, written in Python.</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/Snowstormer/triviabot/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/Snowstormer/triviabot/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/Snowstormer/triviabot">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/Snowstormer">Snowstormer</a></p>
+
+
+      </header>
+      <section>
+        <h1>
+<a id="triviabot" class="anchor" href="#triviabot" aria-hidden="true"><span class="octicon octicon-link"></span></a>triviabot</h1>
+
+<p>A trivia IRC bot, written in Python. Requires Python 2.7.</p>
+
+<h1>
+<a id="setting-up" class="anchor" href="#setting-up" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setting up</h1>
+
+<p>On *nix based operating systems (assuming you have Python 2.7 (and git, if not, shame on you)):</p>
+
+<pre><code>$ git clone https://github.com/Snowstormer/triviabot.git
+$ cd triviabot/
+$ cp config.example.json config.json
+$ python bot.py
+</code></pre>
+
+<p>Of course, you'd have to edit the config first to make it actually work, the example config is similar to this:</p>
+
+<div class="highlight highlight-json"><pre>{
+    <span class="pl-s1"><span class="pl-pds">"</span>--NEED HELP?--<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>--If you are unsure how to edit this config file, please visit the GitHub page for help.--<span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>server<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>irc.myserver.com<span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>port<span class="pl-pds">"</span></span>: <span class="pl-c1">6667</span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>nickname<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>Triviabot<span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>account<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>channel<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>#Trivia<span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>admins<span class="pl-pds">"</span></span>: [<span class="pl-s1"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>],
+    <span class="pl-s1"><span class="pl-pds">"</span>prefix<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>!<span class="pl-pds">"</span></span>,
+
+    <span class="pl-s1"><span class="pl-pds">"</span>--OPTIONAL CONFIGURATION--<span class="pl-pds">"</span></span>: <span class="pl-s1"><span class="pl-pds">"</span>--You don't have to edit anything below here, but you can if you so wish.--<span class="pl-pds">"</span></span>,
+    <span class="pl-s1"><span class="pl-pds">"</span>enabledtopics<span class="pl-pds">"</span></span>: [<span class="pl-s1"><span class="pl-pds">"</span>topic<span class="pl-pds">"</span></span>, <span class="pl-s1"><span class="pl-pds">"</span>topic<span class="pl-pds">"</span></span>, <span class="pl-s1"><span class="pl-pds">"</span>topic<span class="pl-pds">"</span></span>],
+    <span class="pl-s1"><span class="pl-pds">"</span>savepoints<span class="pl-pds">"</span></span>: <span class="pl-c1">false</span>
+}</pre></div>
+
+<p>Everything is pretty self-explanatory - if your bot has no NickServ password, leave <code>password</code> blank. Leaving <code>account</code> blank will default it to the bot's nickname.</p>
+
+<p>If you wish to disable any of the topics, just remove them from the <code>enabledtopics</code> array and you're good to go.</p>
+
+<p>Setting <code>savepoints</code> to true will make the bot keep all earned points even after the game is stopped or the bot disconnects through a points file (<code>points.json</code>), deleting this file will reset the points.</p>
+
+<h1>
+<a id="custom-topics" class="anchor" href="#custom-topics" aria-hidden="true"><span class="octicon octicon-link"></span></a>Custom topics</h1>
+
+<p>Adding custom topics is not hard, just create a new file in the <code>topics</code> directory called <code>(topic).json</code> - for example, <code>example.json</code>.</p>
+
+<p>This is the basic structure of a topic file:</p>
+
+<div class="highlight highlight-json"><pre>{
+    <span class="pl-s1"><span class="pl-pds">"</span>Question<span class="pl-pds">"</span></span>: [<span class="pl-s1"><span class="pl-pds">"</span>answer<span class="pl-pds">"</span></span>],
+    <span class="pl-s1"><span class="pl-pds">"</span>Question 2<span class="pl-pds">"</span></span>: [<span class="pl-s1"><span class="pl-pds">"</span>answer 2<span class="pl-pds">"</span></span>, <span class="pl-s1"><span class="pl-pds">"</span>rewsna<span class="pl-pds">"</span></span>]
+}</pre></div>
+
+<p>As for question, you can put anything - however answers have some guidelines. To make answers not throw an error, you <strong>have to</strong> place them inside a array, yes, even if there's only one answer it has to be in a array.</p>
+
+<p>Answers in the topic files that come with the bot are (mostly) all lowercase - this used to be a requirement, but is not anymore.</p>
+
+<p>Finally, you have to add your topic into the <code>config.json</code>. Just plop it into the <code>enabledtopics</code> array at any place - the array is sorted when displayed anyway.</p>
+
+<p>If you think your topic is good enough to be in the core, you can submit a pull request.</p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
