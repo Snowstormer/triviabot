@@ -7,7 +7,7 @@ Setting up
 =========
 On *nix based operating systems (assuming you have Python 2.7 (and git, if not, shame on you)):
 ```
-$ git clone https://github.com/Snowstormer/triviabot.git
+$ git clone https://github.com/catskittens/triviabot.git
 $ cd triviabot/
 $ cp config.example.json config.json
 $ python bot.py
