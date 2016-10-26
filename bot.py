@@ -21,7 +21,7 @@ channel = None
 admins = None
 prefix = None
 topics = None
-realname = "https://github.com/Snowstormer/triviabot"
+realname = "https://github.com/catskittens/triviabot"
 savepoints = None
 
 if os.path.isfile("config.json"):
