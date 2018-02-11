@@ -1,0 +1,15 @@
+{
+	"--NEED HELP?--": "--If you are unsure how to edit this config file, please visit the GitHub page for help.--",
+	"server": "irc.dalechatea.me",
+	"port": 6667,
+	"nickname": "juegobot",
+	"password": "gamechat",
+	"account": "game",
+	"channel": "#masde40",
+	"admins": ["OjoElectrico"],
+	"prefix": "!",
+
+	"--OPTIONAL CONFIGURATION--": "--You don't have to edit anything below here, but you can if you so wish.--",
+	"enabledtopics": ["todos", "biologia", "canciones", "chat", "ciencia", "cine", "deporte", "fisicaquimica", "geografia", "historia", "informatica", "miscelanea", "sexo"],
+	"savepoints": true
+}
