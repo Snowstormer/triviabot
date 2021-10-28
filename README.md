@@ -5,9 +5,9 @@ A trivia IRC bot, written in Python. Requires Python 2.7.
 
 Setting up
 =========
-On *nix based operating systems (assuming you have Python 2.7 (and git, if not, shame on you)):
+On \*nix based operating systems:
 ```
-$ git clone https://github.com/catskittens/triviabot.git
+$ git clone https://github.com/catsed/triviabot.git
 $ cd triviabot/
 $ cp config.example.json config.json
 $ python bot.py
