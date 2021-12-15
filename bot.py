@@ -1,7 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+# Trivia bot basado en el codigo de https://github.com/catskittens/triviabot
+# se tradujo todo texto que se imprime a castellano
+# asi como el comando propio del bot !topic por !tema ya que coincidia
+# con el comando irc de la sala y se cambiaba dicho topic si era ejecutado como moderador
 
-import socket, sys, time, random, json, re, operator, os
+import socket, sys, time, random, json, re, operator, os, re
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
@@ -10,6 +14,15 @@ def privmsg(to, msg):
 
 def addhelp(prefix, s):
     return prefix + s
+
+# se agrega funcion de eliminacion de codigos de formato
+# de texto de irc como colores, negrita, italica, etc
+def strip_colours(s):
+    ccodes = ["\x0F", "\x16", "\x1D", "\x1F", "\x02",
+        "\x03([1-9][0-6]?)?,?([1-9][0-6]?)?"]
+    for cc in ccodes:
+        s = re.sub(cc, "", s)
+    return s
 
 #settings
 server = None
@@ -21,7 +34,7 @@ channel = None
 admins = None
 prefix = None
 topics = None
-realname = "https://github.com/catskittens/triviabot"
+realname = "Bot de Trivia en castellano"
 savepoints = None
 
 if os.path.isfile("config.json"):
@@ -80,13 +93,20 @@ randomtopic = False
 irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 print "Connecting to: %s:%s" % (server, str(port))
 irc.connect((server, port))
+# se agrega una pausa porque si los mensajes de login y pass son muy rapidos
+# el server no los reconoce y jamas se puede hacer el join posterior a la sala!
+time.sleep(2)
 irc.send("USER %s %s %s :%s\n" % (botnick, botnick, botnick, realname))
+time.sleep(2)
 irc.send("NICK %s\n" % botnick)
 if password != "":
-    irc.send("PRIVMSG NickServ :id %s %s\r\n" % (account, password))
+    irc.send("PRIVMSG NickServ :identify %s %s\r\n" % (account, password))
+	#irc.send("/msg NickServ identify %s \r\n" % (password))
+    #una pausa mas para dar tiempo al server y no saturarlo en el login y el join
+    time.sleep(2)
 irc.send("JOIN %s\n" % channel)
+time.sleep(2)
 
-#body
 readbuffer = ''
 while 1:
     text = irc.recv(2040)
@@ -98,7 +118,8 @@ while 1:
     except Exception:
         pass
     sendto = sendchannel
-
+    # se mantiene conectividad al server respondiendo
+    # el mensaje de ping-pong segun la RFC
     if text.find('PING') != -1:
         irc.send('PONG\r\n')
 
@@ -108,24 +129,27 @@ while 1:
             try:
                 triviatopic = message.split(" ")[1].strip()
                 if triviatopic in topics:
-                    topicmsg = "Topic chosen: %s." % triviatopic
+                    topicmsg = "Tema elegido: %s." % triviatopic
                 else:
                     triviatopic = random.choice(topics)
-                    topicmsg = "Topic chosen randomly: %s." % triviatopic
+                    topicmsg = "Tema al azar: %s." % triviatopic
                     randomtopic = True
             except Exception:
                 triviatopic = random.choice(topics)
-                topicmsg = "Topic chosen randomly: %s." % triviatopic
+                topicmsg = "Tema al azar: %s." % triviatopic
                 randomtopic = True
 
             if started == False:
-                privmsg(sendto, "Welcome to trivia!")
+                privmsg(sendto, "Bienvenidos a la trivia!")
+		privmsg(sendto, "Podes enviar nuevas preguntas a trivia40plus@gmail.com")
+		privmsg(sendto, "indicando Autor, Tema, Pregunta y Respuesta")
+		time.sleep(2)
                 privmsg(sendto, topicmsg)
                 time.sleep(1)
                 started = True
             else:
-                privmsg(sendto, "%s: Trivia is already in session, type %sstop to stop." % (sender, prefix))
-        elif message.lower().startswith(prefix+"topic") and message.lower() != prefix+"topics":
+                privmsg(sendto, "%s: la Trivia esta activa, tipea %sstop para detenerla." % (sender, prefix))
+        elif message.lower().startswith(prefix+"tema") and message.lower() != prefix+"temas":
             if started == True:
                 if sender in admins or randomtopic == True:
                     try:
@@ -133,16 +157,16 @@ while 1:
                         if testtopic in topics:
                             if testtopic != triviatopic:
                                 triviatopic = testtopic
-                                privmsg(sendto, "New topic: %s." % triviatopic)
+                                privmsg(sendto, "Nuevo tema: %s." % triviatopic)
                                 randomtopic = False
                                 number -= 1
                                 answer = ""
                             else:
-                                privmsg(sendto, "%s: %s is already the topic, try another one. Type %stopics to see all available topics!" % (sender, triviatopic, prefix))
+                                privmsg(sendto, "%s: %s ya es el tema actual, proba otro. Escribi %stemas para ver los temas disponibles!" % (sender, triviatopic, prefix))
                         else:
-                            privmsg(sendto, "%s: That doesn't look like a valid topic to me, type %stopics to see all available topics!" % (sender, prefix))
+                            privmsg(sendto, "%s: no parece ser un tema valido, tipea %stemas para ver los temas disponibles!" % (sender, prefix))
                     except Exception:
-                        privmsg(sendto, "%s: That doesn't look like a valid topic to me, type %stopics to see all available topics!" % (sender, prefix))
+                        privmsg(sendto, "%s: no parece ser un tema valido, tipea %stemas para ver los temas disponibles!" % (sender, prefix))
                 else:
                     if sender in points and randomtopic != True:
                         if points[sender] > 5:
@@ -151,36 +175,41 @@ while 1:
                                 if testtopic in topics:
                                     if testtopic != triviatopic:
                                         triviatopic = testtopic
-                                        privmsg(sendto, "New topic: %s." % triviatopic)
+                                        privmsg(sendto, "Nuevo tema: %s." % triviatopic)
                                         number -= 1
                                         answer = ""
                                     else:
-                                        privmsg(sendto, "%s: %s is already the topic, try another one. Type %stopics to see all available topics!" % (sender, triviatopic, prefix))
+                                        privmsg(sendto, "%s: %s ya es el tema actual, prueba uno nuevo. Tipea %stemas para ver los temas disponibles!" % (sender, triviatopic, prefix))
                                 else:
-                                    privmsg(sendto, "%s: That doesn't look like a valid topic to me, type %stopics to see all available topics!" % (sender, prefix))
+                                    privmsg(sendto, "%s: no parece ser un tema valido, tipea %stemas para ver los temas disponibles!" % (sender, prefix))
                             except Exception:
-                                privmsg(sendto, "%s: That doesn't look like a valid topic to me, type %stopics to see all available topics!" % (sender, prefix))
+                                privmsg(sendto, "%s: no parece ser un tema valido, tipea %stemas para ver los temas disponibles!" % (sender, prefix))
                         else:
-                            privmsg(sendto, "%s: You need at least 5 points to switch the topic, you have %s." % (sender, str(points[sender])))
+                            privmsg(sendto, "%s: Necesitas tener al menos 5 puntos para cambiar de tema, tenes %s." % (sender, str(points[sender])))
                     else:
-                        privmsg(sendto, "%s: You have not answered a single question yet, you need at least 5 points to change the topic." % sender)
+                        privmsg(sendto, "%s: No respondide ni 1 pregunta todavia, necesitas al menos 5 puntos para cambiar de tema." % sender)
             else:
-                privmsg(sendto, "%s: Trivia is not in session, type %sstart to start." % (sender, prefix))
-        elif message.lower() == prefix+"topics":
-            privmsg(sendto, "All available topics: "+", ".join(topics))
-        elif message.lower() in [i.lower() for i in answer]:
+                privmsg(sendto, "%s: Trivia no iniciada, tipea %sstart para comenzar." % (sender, prefix))
+        elif message.lower() == prefix+"temas":
+            privmsg(sendto, "Temas disponibles: "+", ".join(topics))
+	# se trata de quitar codigos de formateo de texto de respuestas
+	# ej colores, bold, italica, underline, etc para cotejar con respuesta almacenada
+        elif strip_colours(message.lower()) in [i.lower() for i in answer]:
             if answer != "":
                 end = time.time()
                 timeelapsed = round(end - start, 2)
                 if timeelapsed <= 2.0:
                     pointamount = 5
-                elif timeelapsed <= 3.0:
+                elif timeelapsed <= 4.0:
                     pointamount = 3
-                elif timeelapsed <= 5.0:
+                elif timeelapsed <= 8.0:
                     pointamount = 2
                 else:
                     pointamount = 1
-                privmsg(sendto, "%s is correct, %s gains 03%s point%s! (answered in %ss)" % (message.title(), sender, str(pointamount), "" if pointamount == 1 else 's', str(timeelapsed)))
+		# se agrega codigo de color y texto camuflado http para
+		# lograr que salgan todos los numeros ya que el server
+		# dalechatea filtra cuando hay varios nros en un string!
+                privmsg(sendto, "\x033,3http\x03%s es correcto!, %s gana 03%s punto%s! (respondida en %ss)\x033,3http\x03" % (message.title(), sender, str(pointamount), "" if pointamount == 1 else 's', str(timeelapsed)))
                 if sender in points:
                     points[sender] += pointamount
                 else:
@@ -197,7 +226,7 @@ while 1:
                     if sender in admins:
                         end = time.time()
                         timeelapsed = str(round(end - start, 2))
-                        privmsg(sendto, "%s skipped the question! (skipped after %ss)" % (sender, timeelapsed))
+                        privmsg(sendto, "\x035,5http\x03%s pregunta salteada! (despues de %ss)\x035,5http\x03" % (sender, timeelapsed))
                         time.sleep(1)
                         answer = ""
                     else:
@@ -213,12 +242,12 @@ while 1:
                                     pointamount = 2
                                 else:
                                     pointamount = 1
-                                privmsg(sendto, "%s skipped the question, they lose 04%s point%s! (skipped after %ss)" % (sender, str(pointamount), "" if pointamount == 1 else 's', str(timeelapsed)))
+                                privmsg(sendto, "\x035,5http\x03%s salteo de pregunta, pierden 04%s punto%s! (despues de %ss)\x035,5http\x03" % (sender, str(pointamount), "" if pointamount == 1 else 's', str(timeelapsed)))
                                 points[sender] -= pointamount
                                 if points[sender] == 0:
-                                    privmsg(sendto, "%s: Please note, you have no points left, you cannot skip more questions until you gain more." % sender)
+                                    privmsg(sendto, "%s: Atencion, no te quedan puntos, no podes saltear mas preguntas hasta que no consigas puntos." % sender)
                                 elif points[sender] < 5:
-                                    privmsg(sendto, "%s: Please note, you have less than 5 points left, you cannot skip more questions until you gain more." % sender)
+                                    privmsg(sendto, "%s: Atencion, tenes menos de 5 puntos, no podes saltear mas preguntas hasta que consigas puntaje." % sender)
                                 if savepoints == True:
                                     pointsfile = open('points.json', 'w')
                                     pointsfile.write(json.dumps(points))
@@ -226,11 +255,11 @@ while 1:
                                 time.sleep(1)
                                 answer = ""
                             else:
-                                privmsg(sendto, "%s: You need at least 5 points to skip a question, you have %s." % (sender, str(points[sender])))
+                                privmsg(sendto, "%s: Necesitas al menos 5 puntos para saltear la pregunta, tenes %s." % (sender, str(points[sender])))
                         else:
-                            privmsg(sendto, "%s: You have not answered a single question yet, you need at least 5 points to skip a question." % sender)
+                            privmsg(sendto, "%s: Todavia no respondiste ni una pregunta, necesitas al menos 5 puntos para poder saltear preguntas." % sender)
                 else:
-                    privmsg(sendto, "%s: Trivia is not in session, type %sstart to start." % (sender, prefix))
+                    privmsg(sendto, "%s: Trivia no iniciada, tipea %sstart para comenzar." % (sender, prefix))
         elif message.lower() == prefix+"stop":
             if started == True:
                 if sender in admins:
@@ -240,7 +269,7 @@ while 1:
                         points = {}
                     triviatopic = None
                     started = False
-                    privmsg(sendto, "Trivia session ended! Type %sstart to start again!" % prefix)
+                    privmsg(sendto, "Trivia finalizada! Tipea %sstart para comenzar de nuevo!" % prefix)
                 elif sender in points:
                     if points[sender] > 10:
                         answer = ""
@@ -249,33 +278,37 @@ while 1:
                             points = {}
                         triviatopic = None
                         started = False
-                        privmsg(sendto, "Trivia session ended! Type %sstart to start again!" % prefix)
+                        privmsg(sendto, "Trivia finalizada! Tipea %sstart para comenzar de nuevo!" % prefix)
                     else:
-                        privmsg(sendto, "%s: You need at least 10 points to stop the session, you have %s." % (sender, str(points[sender])))
+                        privmsg(sendto, "\x035,5http\x03%s: Necesitas al menos 10 puntos para detener el juego, tenes %s.\x035,5http\x03" % (sender, str(points[sender])))
                 else:
-                    privmsg(sendto, "%s: You have not answered a single question yet, you need at least 10 points to stop the session." % (sender))
+                    privmsg(sendto, "%s: No respondiste ni una pregunta todavia, precisas al menos 10 puntos para detener el juego." % (sender))
             else:
-                privmsg(sendto, "%s: Trivia is not in session, type %sstart to start." % (sender, prefix))
+                privmsg(sendto, "%s: Trivia no iniciada, tipea %sstart para comenzar." % (sender, prefix))
         elif message.lower() == prefix+"quit":
             if sender in admins:
                 if started != True:
-                    irc.send('QUIT :Requested by %s.\n' % sender)
+                    irc.send('FINALIZADA : por %s.\n' % sender)
                     sys.exit()
                 else:
-                    privmsg(sendto, "%s: Cannot quit while trivia is in session, please type %sstop and then try again." % (sender, prefix))
+                    privmsg(sendto, "%s: Imposible salir de la Trivia mientras hay un juego, tipea %sstop y prueba nuevamente." % (sender, prefix))
             else:
-                privmsg(sendto, "%s: You do not have the permission to do this." % sender)
+                privmsg(sendto, "%s: No tenes autorizacion para realizar esta funcion." % sender)
         elif message.lower() == prefix+"points":
             if started == True or savepoints == True:
                 if not points:
-                    privmsg(sendto, "%s: No one has scored a point yet, you can be the first by answering a question!" % sender)
+                    privmsg(sendto, "%s: Nadie contesto ni una pregunta todavia, vamos, quien sera el primero?!" % sender)
                 else:
                     pointlist = []
-                    for pointkey in points:
+		    # se ordena alfabeticamente usuarios para mostrar sus puntajes
+		    # teniendo en cuenta que hay nicks mezclados tanto en mayusculas
+		    # como en minusculas
+                    for pointkey in sorted(points, key=lambda x: x.lower()):
+			#privmsg(sendto, str(pointkey)+": "+str(points[pointkey]))
                         pointlist.append(str(pointkey)+": "+str(points[pointkey]))
-                    privmsg(sendto, sender+": "+", ".join(pointlist))
+                    privmsg(sendto, "\x034,4http\x03"+sender+": "+", ".join(pointlist)+"\x034,4http\x03")
             else:
-                privmsg(sendto, "%s: Trivia is not in session, type %sstart to start." % (sender, prefix))
+                privmsg(sendto, "%s: Trivia no inciada, tipea %sstart para comenzar." % (sender, prefix))
         elif message.lower().startswith(prefix+"switch"):
             if sender in admins:
                 if started != True:
@@ -291,7 +324,7 @@ while 1:
                 else:
                     privmsg(sendto, "%s: Cannot switch channels while trivia is in session, please type %sstop to stop." % (sender, prefix))
             else:
-                privmsg(sendto, "%s: You do not have the permission to do this." % sender)
+                privmsg(sendto, "%s: No tenes autorizacion para realizar esta funcion." % sender)
         elif message.lower() == prefix+"commands" or message.lower() == prefix+"commandlist" or message.lower() == prefix+"help":
             command_list = []
             if started != True:
@@ -299,7 +332,7 @@ while 1:
             if started == True:
                 command_list.append(addhelp(prefix, "stop"))
                 command_list.append(addhelp(prefix, "skip"))
-                command_list.append(addhelp(prefix, "topic"))
+                command_list.append(addhelp(prefix, "tema"))
             if started == True or savepoints == True:
                 command_list.append(addhelp(prefix, "points"))
             command_list.append(addhelp(prefix, "commands"))
@@ -309,14 +342,14 @@ while 1:
                 if started != True:
                     command_list.append(addhelp(prefix, "quit"))
                     command_list.append(addhelp(prefix, "switch"))
-            privmsg(sendto, "%s: Commands available to you are %s" % (sender, ", ".join(command_list)))
+            privmsg(sendto, "%s: los comandos que tenes disponibles son %s" % (sender, ", ".join(command_list)))
 
     while answer == "" and started == True and triviatopic != None:
-        if triviatopic != "all":
+        if triviatopic != "todos":
             topicjson = open("topics/"+triviatopic+".json")
         else:
             alltopics = topics[:]
-            alltopics.remove("all")
+            alltopics.remove("todos")
             topicjson = open("topics/"+random.choice(alltopics)+".json")
         questions = json.load(topicjson)
         if question in questions:
@@ -324,6 +357,15 @@ while 1:
         topicjson.close()
         question = random.choice(questions.keys())
         answer = questions[question]
-        privmsg(sendto, "Question %s: %s" % (number, question))
+	# se asume una sola respuesta para la trivia
+	# espaniola standard (aunque este bot soporta
+	# multiples rtas a una misma pregunta
+	# y se obtiene cantidad de palabras como ayuda
+	# en el enunciado de la pregunta
+	cantPals = len(answer[0].split())
+	pals = "palabra"
+	if cantPals > 1:
+		pals = pals + "s"
+        privmsg(sendto, "\x036,6http\x03Pregunta %s: %s (%s %s)\x036,6http\x03" % (number, question, cantPals, pals))
         start = time.time()
         number += 1
